@@ -79,7 +79,7 @@
 
   function renderOutput() {
     const sheet = MTP.buildSheet(data, state, overrides, contacts);
-    const r = MTP.inspect(data, state, overrides);
+    const r = MTP.inspect(data, state, overrides, contacts);
     const sh = $('sheet'); sh.textContent = '';
     sheet.sections.forEach(s => {
       if (!s.items.length) return;
@@ -105,7 +105,7 @@
     const pr = el('button', { type: 'button', text: '印刷する' });
     pr.disabled = r.blockers.length > 0 || !approved;
     pr.onclick = () => {
-      const again = MTP.inspect(data, state, overrides);
+      const again = MTP.inspect(data, state, overrides, contacts);
       if (again.blockers.length || !approved) return;
       if (again.hasSpecial && !confirm('特別指示あり。書面に特別指示が含まれています。印刷しますか')) return;
       if (again.warnings.length && !confirm('警告があります。確認のうえ印刷しますか')) return;

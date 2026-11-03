@@ -57,7 +57,7 @@
     return { sections, notice };
   }
 
-  function inspect(data, state, overrides) {
+  function inspect(data, state, overrides, contacts) {
     const blockers = [], warnings = [];
     data.variables.forEach(v => {
       const sel = state.sel[v.id];
@@ -70,6 +70,11 @@
     });
     if (!data.fixedNotice || !data.fixedNotice.body || !data.fixedNotice.body.trim())
       blockers.push('外せない注意書きがありません');
+    const unset = data.fixedNotice.contacts.some(c => {
+      const v = contacts && contacts[c.id] ? String(contacts[c.id]).trim() : '';
+      return v === '' || v === c.placeholder;
+    });
+    if (unset) blockers.push('連絡先が未設定です');
     (data.rules || []).forEach(r => {
       const hit = r.when.every(c => (state.sel[c.variable] || []).includes(c.option));
       if (hit) warnings.push(r.message);
