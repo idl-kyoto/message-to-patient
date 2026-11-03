@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Message to Patient</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="noprint"><h1>Message to Patient</h1><span id="title"></span></header>
+<main>
+  <section id="panel" class="noprint">
+    <div id="choices"></div>
+    <details id="contactBox"><summary>連絡先の設定（この端末のブラウザに保存）</summary><div id="contacts"></div></details>
+    <details id="editBox"><summary>文章モジュールの編集（この端末のブラウザに保存）</summary><div id="editor"></div></details>
+  </section>
+  <section id="right">
+    <div id="check" class="noprint"></div>
+    <article id="sheet"></article>
+  </section>
+</main>
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

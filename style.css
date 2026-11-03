@@ -1,0 +1,26 @@
+body{font-family:sans-serif;margin:0;color:#111}
+header{padding:8px 16px;border-bottom:1px solid #ccc;display:flex;gap:16px;align-items:baseline}
+h1{font-size:18px;margin:0}
+main{display:flex;gap:16px;padding:16px;align-items:flex-start}
+#panel{flex:1;min-width:0}
+#right{flex:1;min-width:0}
+.var{border:1px solid #ccc;padding:8px;margin-bottom:8px}
+.var h3{margin:0 0 4px;font-size:15px}
+.var label{display:block;margin:2px 0}
+.var textarea,.mod textarea{width:100%;box-sizing:border-box}
+.sp{margin-top:4px;font-size:13px}
+.mod{margin:6px 0}
+.blocker{color:#b00020}
+.warn{color:#8a5a00}
+#check{border:1px solid #ccc;padding:8px;margin-bottom:8px}
+#sheet{border:1px solid #888;padding:16px;background:#fff;min-height:200px}
+#sheet h2{font-size:16px;border-bottom:1px solid #000;margin:16px 0 6px}
+#sheet p{margin:4px 0;line-height:1.7}
+#sheet .sp{font-size:inherit}
+#sheet .notice{margin-top:24px;border-top:2px solid #000;padding-top:8px}
+@media print{
+  @page{size:A4;margin:15mm}
+  .noprint{display:none!important}
+  main{display:block;padding:0}
+  #sheet{border:0;padding:0}
+}

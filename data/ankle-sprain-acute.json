@@ -1,0 +1,250 @@
+{
+  "id": "ankle-sprain-acute",
+  "title": "足首の捻挫（急性期）",
+  "sections": [
+    {
+      "id": "s1",
+      "name": "状態と見通し"
+    },
+    {
+      "id": "s2",
+      "name": "治療"
+    },
+    {
+      "id": "s3",
+      "name": "日常生活"
+    },
+    {
+      "id": "s4",
+      "name": "困ったとき"
+    }
+  ],
+  "variables": [
+    {
+      "id": "surgery",
+      "name": "手術の可能性",
+      "section": "s1",
+      "type": "always",
+      "options": [
+        {
+          "id": "text",
+          "name": "手術の可能性",
+          "text": "保存治療で痛みが改善しない場合や、足首にぐらぐらするような不安定感がある場合は、手術も考慮されます。",
+          "none": false
+        }
+      ]
+    },
+    {
+      "id": "immobilization",
+      "name": "固定",
+      "section": "s2",
+      "type": "single",
+      "options": [
+        {
+          "id": "mild",
+          "name": "軽症",
+          "text": "テーピングまたはサポーターで足首を固定します。サポーターは、4週間が目安です。それより短いことも長いこともあります。経過を見て、診察で決めます。",
+          "none": false
+        },
+        {
+          "id": "moderate",
+          "name": "中等症以上",
+          "text": "シーネ（添え木）で足首を固定します。シーネは、1〜2週間が目安です。そのあとは、サポーターに替えることが多いです。固定の期間は、6〜12週間が目安です。それより短いことも長いこともあります。経過を見て、診察で決めます。",
+          "none": false
+        }
+      ]
+    },
+    {
+      "id": "weightbearing",
+      "name": "荷重",
+      "section": "s3",
+      "type": "single",
+      "options": [
+        {
+          "id": "none_wb",
+          "name": "完全免荷",
+          "text": "痛みが強いときは、松葉杖を使って、怪我をした方の足に体重をかけないようにします。",
+          "none": false
+        },
+        {
+          "id": "partial",
+          "name": "部分荷重",
+          "text": "松葉杖を使いながら、怪我をした方の足を少しだけつきます。",
+          "none": false
+        },
+        {
+          "id": "no_crutch",
+          "name": "松葉杖なし",
+          "text": "痛みの範囲で、普通に歩いて構いません。",
+          "none": false
+        }
+      ]
+    },
+    {
+      "id": "elevation",
+      "name": "下肢挙上",
+      "section": "s3",
+      "type": "single",
+      "options": [
+        {
+          "id": "yes",
+          "name": "選ぶ",
+          "text": "寝るときや、できれば昼間も、枕やクッションを入れて、足を心臓より高くしておきます。",
+          "none": false
+        },
+        {
+          "id": "no",
+          "name": "選ばない",
+          "text": "",
+          "none": true
+        }
+      ]
+    },
+    {
+      "id": "exercise",
+      "name": "運動",
+      "section": "s3",
+      "type": "single",
+      "options": [
+        {
+          "id": "dorsi",
+          "name": "背屈のみ",
+          "text": "強い痛みが出ない範囲で、足首を上に曲げる運動だけ行います。足首を下に伸ばす運動は、避けてください。",
+          "none": false
+        },
+        {
+          "id": "dorsi_plantar_heel",
+          "name": "背屈と底屈、ヒールアップ",
+          "text": "強い痛みが出ない範囲で、足首を上に曲げる運動と、下に伸ばす運動を行います。痛みがなければ、両足でかかとを上げる運動も行います。",
+          "none": false
+        },
+        {
+          "id": "none",
+          "name": "該当なし",
+          "text": "",
+          "none": true
+        }
+      ]
+    },
+    {
+      "id": "early_exercise",
+      "name": "早期からできる運動",
+      "section": "s3",
+      "type": "multi",
+      "options": [
+        {
+          "id": "calf",
+          "name": "ふくらはぎ",
+          "text": "強い痛みが出ない範囲で、足首を動かさずに、ふくらはぎに力を入れる運動も行います。",
+          "none": false
+        },
+        {
+          "id": "toes",
+          "name": "足の指",
+          "text": "強い痛みが出ない範囲で、足の指を動かします。いつでも行って構いません。",
+          "none": false
+        },
+        {
+          "id": "none",
+          "name": "該当なし",
+          "text": "",
+          "none": true
+        }
+      ]
+    },
+    {
+      "id": "bathing",
+      "name": "入浴",
+      "section": "s3",
+      "type": "single",
+      "options": [
+        {
+          "id": "ok",
+          "name": "入浴可",
+          "text": "",
+          "none": false
+        },
+        {
+          "id": "shower",
+          "name": "シャワーのみ",
+          "text": "",
+          "none": false
+        },
+        {
+          "id": "ng",
+          "name": "入浴不可",
+          "text": "",
+          "none": false
+        }
+      ]
+    },
+    {
+      "id": "work",
+      "name": "仕事",
+      "section": "s3",
+      "type": "single",
+      "options": [
+        {
+          "id": "off",
+          "name": "業務不可（自宅安静）",
+          "text": "",
+          "none": false
+        },
+        {
+          "id": "sitting",
+          "name": "座り仕事のみ",
+          "text": "",
+          "none": false
+        },
+        {
+          "id": "light",
+          "name": "軽作業",
+          "text": "",
+          "none": false
+        },
+        {
+          "id": "medium",
+          "name": "中作業",
+          "text": "",
+          "none": false
+        },
+        {
+          "id": "heavy",
+          "name": "重作業",
+          "text": "",
+          "none": false
+        }
+      ]
+    },
+    {
+      "id": "trouble",
+      "name": "つらいとき、連絡の目安",
+      "section": "s4",
+      "type": "always",
+      "options": [
+        {
+          "id": "text",
+          "name": "つらいとき、連絡の目安",
+          "text": "きつい、しびれる、指先の色が悪いときは、まず固定を外してください。外してもよくならないときや、痛みが長引くときは、医療機関にご連絡ください。",
+          "none": false
+        }
+      ]
+    }
+  ],
+  "fixedNotice": {
+    "body": "これは一般的な目安です。治り方や期間には個人差があり、例外もあります。担当医の指示を優先してください。",
+    "contacts": [
+      {
+        "id": "phone",
+        "label": "連絡先",
+        "placeholder": "[医療機関の電話番号]"
+      },
+      {
+        "id": "emergency",
+        "label": "緊急時の連絡先",
+        "placeholder": "[緊急時の連絡先]"
+      }
+    ]
+  },
+  "rules": []
+}
