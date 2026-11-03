@@ -128,7 +128,11 @@
     c.appendChild(ap); c.appendChild(document.createTextNode(' ')); c.appendChild(pr);
   }
 
-  fetch('data/' + diseaseId + '.json').then(r => r.json()).then(d => {
+  // draft のときは、2階の下書き（localStorage）を読む。それ以外は、data/*.json を読む
+  const source = diseaseId === 'draft'
+    ? new Promise(res => res(JSON.parse(localStorage.getItem('mtp-editor.draft'))))
+    : fetch('data/' + diseaseId + '.json').then(r => r.json());
+  source.then(d => {
     data = d; state = MTP.initialState(data);
     $('title').textContent = data.title;
     renderChoices(); renderContacts(); renderEditor(); renderOutput();
