@@ -1,0 +1,22 @@
+{
+  "id": "blank",
+  "title": "（病気の名前を入れてください）",
+  "sections": [],
+  "variables": [],
+  "fixedNotice": {
+    "body": "これは一般的な目安です。治り方や期間には個人差があり、例外もあります。担当医の指示を優先してください。",
+    "contacts": [
+      {
+        "id": "phone",
+        "label": "連絡先",
+        "placeholder": "[医療機関の電話番号]"
+      },
+      {
+        "id": "emergency",
+        "label": "緊急時の連絡先",
+        "placeholder": "[緊急時の連絡先]"
+      }
+    ]
+  },
+  "rules": []
+}
