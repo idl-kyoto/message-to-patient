@@ -1,4 +1,7 @@
 (function () {
+  // 書面の見た目に関わる定数（文言は仮）
+  const SPECIAL_LABEL = '担当医から';
+  const HIGHLIGHT_SECTIONS = ['s4'];
   const $ = id => document.getElementById(id);
   const params = new URLSearchParams(location.search);
   const diseaseId = (params.get('d') || 'ankle-sprain-acute').replace(/[^a-z0-9-]/g, '');
@@ -85,11 +88,16 @@
     sh.appendChild(el('p', { className: 'sheet-date', text: MTP.formatDate(new Date()) }));
     sheet.sections.forEach(s => {
       if (!s.items.length) return;
-      sh.appendChild(el('h2', { text: s.name }));
+      const box = el('section', { className: 'blk' + (HIGHLIGHT_SECTIONS.includes(s.id) ? ' hl' : '') });
+      box.appendChild(el('h2', { text: s.name }));
       s.items.forEach(i => {
-        i.texts.forEach(t => sh.appendChild(el('p', { text: t })));
-        if (i.special) sh.appendChild(el('p', { className: 'sp', text: i.special }));
+        const card = el('div', { className: 'card' });
+        i.texts.forEach(t => card.appendChild(el('p', { text: t })));
+        if (i.special) card.appendChild(el('p', { className: 'sp' }, [
+          el('span', { className: 'splabel', text: SPECIAL_LABEL }), el('span', { text: i.special })]));
+        box.appendChild(card);
       });
+      sh.appendChild(box);
     });
     const n = el('div', { className: 'notice' }, [el('p', { text: sheet.notice.body })]);
     sheet.notice.lines.forEach(l => {
