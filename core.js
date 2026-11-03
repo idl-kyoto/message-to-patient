@@ -91,5 +91,7 @@
     return out.join('\n');
   }
 
-  return { findVar, textOf, initialState, setChoice, buildSheet, inspect, sheetToText };
+  function formatDate(d) { return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日'; }
+
+  return { formatDate, findVar, textOf, initialState, setChoice, buildSheet, inspect, sheetToText };
 });

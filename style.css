@@ -14,13 +14,19 @@ main{display:flex;gap:16px;padding:16px;align-items:flex-start}
 .warn{color:#8a5a00}
 #check{border:1px solid #ccc;padding:8px;margin-bottom:8px}
 #sheet{border:1px solid #888;padding:16px;background:#fff;min-height:200px}
-#sheet h2{font-size:16px;border-bottom:1px solid #000;margin:16px 0 6px}
-#sheet p{margin:4px 0;line-height:1.7}
+#sheet .sheet-title{font-size:28px;margin:0 0 4px;font-weight:bold}
+#sheet .sheet-date{text-align:right;margin:0 0 8px}
+#sheet h2{font-size:16px;font-weight:bold;border-bottom:3px solid #000;margin:28px 0 10px;padding-bottom:2px;break-after:avoid}
 #sheet .sp{font-size:inherit}
-#sheet .notice{margin-top:24px;border-top:2px solid #000;padding-top:8px}
+#sheet p{margin:0 0 12px;line-height:1.7;break-inside:avoid}
+#sheet .notice{margin-top:28px;border:2px solid #000;padding:10px 12px;break-inside:avoid}
+#sheet .notice p:last-child,#sheet .notice p.contact{margin-bottom:6px}
+#sheet .contact{display:grid;grid-template-columns:9em 1fr}
 @media print{
-  @page{size:A4;margin:15mm}
+  @page{size:A4;margin:0}
   .noprint{display:none!important}
+  html,body{background:#fff}
   main{display:block;padding:0}
-  #sheet{border:0;padding:0}
+  #right{display:block}
+  #sheet{border:0;padding:15mm}
 }

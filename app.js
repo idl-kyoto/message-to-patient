@@ -81,6 +81,8 @@
     const sheet = MTP.buildSheet(data, state, overrides, contacts);
     const r = MTP.inspect(data, state, overrides, contacts);
     const sh = $('sheet'); sh.textContent = '';
+    sh.appendChild(el('h1', { className: 'sheet-title', text: data.title }));
+    sh.appendChild(el('p', { className: 'sheet-date', text: MTP.formatDate(new Date()) }));
     sheet.sections.forEach(s => {
       if (!s.items.length) return;
       sh.appendChild(el('h2', { text: s.name }));
@@ -90,7 +92,11 @@
       });
     });
     const n = el('div', { className: 'notice' }, [el('p', { text: sheet.notice.body })]);
-    sheet.notice.lines.forEach(l => n.appendChild(el('p', { text: l })));
+    sheet.notice.lines.forEach(l => {
+      const k = l.indexOf('：');
+      n.appendChild(el('p', { className: 'contact' }, [
+        el('span', { className: 'lbl', text: l.slice(0, k + 1) }), el('span', { text: l.slice(k + 1) })]));
+    });
     sh.appendChild(n);
 
     const c = $('check'); c.textContent = '';

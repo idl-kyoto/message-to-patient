@@ -58,6 +58,13 @@ ok(edited.sections[0].items[0].texts[0] === '編集後', '6 always の文は編�
 // 7 注意書き
 ok(M.inspect({ ...data, fixedNotice: { ...data.fixedNotice, body: '' } }, fresh(), {}).blockers.some(b => b.includes('注意書き')), '7 注意書きがなければ印刷不可');
 ok(M.buildSheet(data, fresh(), { 'x': 'y' }, {}).notice.body === data.fixedNotice.body, '7 注意書きの本文は上書きされない');
+// v1.3 本文が変更前と一致・題名・印刷日
+const bs = fresh();
+data.variables.forEach(v => { if (v.type === 'multi') v.options.filter(o => !o.none).forEach(o => M.setChoice(data, bs, v.id, o.id, true)); else if (v.type !== 'always') M.setChoice(data, bs, v.id, v.options[0].id, true); });
+ok(M.sheetToText(M.buildSheet(data, bs, {}, {})) === fs.readFileSync(path.join(__dirname, 'baseline.txt'), 'utf8'), '1.3 書面の本文が変更前と完全一致');
+const now = new Date();
+ok(M.formatDate(now) === now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日', '1.3 印刷日が実行日の日付で出る');
+ok(/^\d{4}年\d{1,2}月\d{1,2}日$/.test(M.formatDate(now)), '1.3 日付の形式');
 // 連絡先
 const full = fresh();
 data.variables.forEach(v => { if (v.type !== 'always') { const o = v.options.find(o => o.none) || v.options.find(o => o.text) || v.options[0]; M.setChoice(data, full, v.id, o.id, true); } });
