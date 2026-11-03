@@ -1,82 +1,21 @@
 // 使い方: node test/check.js ["資料のmdのパス"]
-const fs = require('fs'), path = require('path');
-const M = require('../core.js');
-const data = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/ankle-sprain-acute.json'), 'utf8'));
-const md = process.argv[2] ? fs.readFileSync(process.argv[2], 'utf8') : null;
-let ng = 0;
-const ok = (c, m) => { console.log((c ? '○ ' : '× ') + m); if (!c) ng++; };
-const fresh = () => M.initialState(data);
-const CT = { phone: '000-0000-0000', emergency: '000-0000-0001' };
-
-// 2. 全変数を選ぶ（文が空欄の選択肢は名前が出る）（single は先頭の非空欄、multi は none 以外すべて）→ JSONの文と完全一致
-const st = fresh();
-const expected = [];
-data.sections.forEach(s => {
-  const lines = [];
-  data.variables.filter(v => v.section === s.id).forEach(v => {
-    let pick;
-    if (v.type === 'multi') { pick = v.options.filter(o => !o.none); pick.forEach(o => M.setChoice(data, st, v.id, o.id, true)); }
-    else { const o = v.options.find(o => o.text) || v.options[0]; M.setChoice(data, st, v.id, o.id, true); pick = [o]; }
-    pick.forEach(o => { if (!o.none) lines.push(o.text || o.name); });
-  });
-  if (lines.length) expected.push(s.name, ...lines);
+// 足首用（check-ankle.js）と共通用（check-base.js）を順に実行する。一方でも失敗すれば、終了コードは1
+const { spawnSync } = require('child_process');
+const path = require('path');
+const jobs = [
+  ['足首用', 'check-ankle.js', process.argv.slice(2)],
+  ['共通用（白紙・骨粗鬆症・2階）', 'check-base.js', []]
+];
+let failed = 0;
+jobs.forEach(([label, file, args]) => {
+  console.log('==== ' + label + '（' + file + '）');
+  const r = spawnSync(process.execPath, [path.join(__dirname, file), ...args], { encoding: 'utf8' });
+  process.stdout.write(r.stdout || '');
+  process.stderr.write(r.stderr || '');
+  const lines = (r.stdout || '').split('\n');
+  const pass = lines.filter(l => l.startsWith('○')).length, fail = lines.filter(l => l.startsWith('×')).length;
+  console.log('---- ' + label + '：○ ' + pass + '件、× ' + fail + '件');
+  if (r.status !== 0) failed++;
 });
-expected.push(data.fixedNotice.body, ...data.fixedNotice.contacts.map(c => c.label + '：' + c.placeholder));
-ok(M.sheetToText(M.buildSheet(data, st, {}, {})) === expected.join('\n'), '2 プレビューとJSONの文が完全一致');
-
-// 資料との一致（JSONの各文が資料の行にそのまま含まれる）
-if (md) {
-  const all = data.variables.flatMap(v => v.options.filter(o => o.text).map(o => o.text));
-  ok(all.every(t => md.includes(t)), '資料の文とJSONの文が一致（' + all.length + '件）');
-  ok(md.includes(data.fixedNotice.body), '資料と注意書きの本文が一致');
-}
-
-// 3
-let r = M.inspect(data, fresh(), {});
-ok(r.blockers.some(b => b.includes('固定')) && r.blockers.some(b => b.includes('早期からできる運動')), '3 single・multi の未選択は印刷不可');
-// 4
-const s4 = fresh(); const mv = data.variables.find(v => v.type === 'multi');
-M.setChoice(data, s4, mv.id, 'calf', true); M.setChoice(data, s4, mv.id, 'none', true);
-const a = s4.sel[mv.id].join();
-M.setChoice(data, s4, mv.id, 'toes', true);
-ok(a === 'none' && s4.sel[mv.id].join() === 'toes', '4 該当なしと他は同時に選べない');
-// 5
-const s5 = fresh();
-data.variables.forEach(v => { if (v.type !== 'always') { const o = v.options.find(o => o.none) || v.options.find(o => o.text) || v.options[0]; M.setChoice(data, s5, v.id, o.id, true); } });
-ok(M.inspect(data, s5, {}, CT).blockers.length === 0, '5 文が空欄の選択肢（入浴・仕事）を選んでも印刷不可にならない');
-const t5 = M.sheetToText(M.buildSheet(data, s5, {}, CT));
-ok(t5.split('\n').includes('入浴可') && t5.split('\n').includes('業務不可（自宅安静）'), '5 文が空欄の選択肢は、名前が書面に出る');
-ok(M.sheetToText(M.buildSheet(data, s5, { 'bathing.ok': '入浴の文' }, CT)).split('\n').includes('入浴の文') && !M.sheetToText(M.buildSheet(data, s5, { 'bathing.ok': '入浴の文' }, CT)).split('\n').includes('入浴可'), '5 文が空欄でないときは、名前ではなく文が出る');
-ok(!t5.includes('該当なし') && !t5.includes('選ばない'), '5 none=true の選択肢は、何も出ない');
-// 6
-const s6 = fresh();
-ok(s6.sel.surgery.join() === 'text', '6 always は最初から選択');
-M.setChoice(data, s6, 'surgery', 'text', false);
-ok(s6.sel.surgery.join() === 'text', '6 always は外せない');
-const edited = M.buildSheet(data, s6, { 'surgery.text': '編集後' }, {});
-ok(edited.sections[0].items[0].texts[0] === '編集後', '6 always の文は編集できる');
-// 7 注意書き
-ok(M.inspect({ ...data, fixedNotice: { ...data.fixedNotice, body: '' } }, fresh(), {}).blockers.some(b => b.includes('注意書き')), '7 注意書きがなければ印刷不可');
-ok(M.buildSheet(data, fresh(), { 'x': 'y' }, {}).notice.body === data.fixedNotice.body, '7 注意書きの本文は上書きされない');
-// v1.3 本文が変更前と一致・題名・印刷日
-const bs = fresh();
-data.variables.forEach(v => { if (v.type === 'multi') v.options.filter(o => !o.none).forEach(o => M.setChoice(data, bs, v.id, o.id, true)); else if (v.type !== 'always') M.setChoice(data, bs, v.id, v.options[0].id, true); });
-ok(M.sheetToText(M.buildSheet(data, bs, {}, {})) === fs.readFileSync(path.join(__dirname, 'baseline.txt'), 'utf8'), '1.3 書面の本文が変更前と完全一致');
-const now = new Date();
-ok(M.formatDate(now) === now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日', '1.3 印刷日が実行日の日付で出る');
-ok(/^\d{4}年\d{1,2}月\d{1,2}日$/.test(M.formatDate(now)), '1.3 日付の形式');
-// 連絡先
-const full = fresh();
-data.variables.forEach(v => { if (v.type !== 'always') { const o = v.options.find(o => o.none) || v.options.find(o => o.text) || v.options[0]; M.setChoice(data, full, v.id, o.id, true); } });
-const fill = {};
-const nb = c => M.inspect(data, full, fill, c).blockers.filter(b => b.includes('連絡先'));
-ok(nb({}).length === 1, '連絡先が空欄のとき印刷不可');
-ok(nb({ phone: '[医療機関の電話番号]', emergency: '[緊急時の連絡先]' }).length === 1, '仮の表記のままのとき印刷不可');
-ok(nb({ phone: CT.phone }).length === 1 && nb({ emergency: CT.emergency }).length === 1, '1項目だけ設定したとき印刷不可');
-ok(nb(CT).length === 0 && M.inspect(data, full, fill, CT).blockers.length === 0, '2項目とも設定すると印刷可');
-// rules
-const rd = { ...data, rules: [{ id: 't', when: [{ variable: 'elevation', option: 'yes' }], message: 'テスト' }] };
-const s8 = fresh(); M.setChoice(rd, s8, 'elevation', 'yes', true);
-ok(M.inspect(rd, s8, {}).warnings.join() === 'テスト', 'rules 一致で警告');
-console.log(ng ? ng + '件 ×' : 'すべて ○');
-process.exit(ng ? 1 : 0);
+console.log(failed ? '失敗あり（' + failed + '組）' : 'すべての組が ○');
+process.exit(failed ? 1 : 0);
