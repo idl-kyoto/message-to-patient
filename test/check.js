@@ -8,7 +8,7 @@ const ok = (c, m) => { console.log((c ? '○ ' : '× ') + m); if (!c) ng++; };
 const fresh = () => M.initialState(data);
 const CT = { phone: '000-0000-0000', emergency: '000-0000-0001' };
 
-// 2. 全変数を選ぶ（single は先頭の非空欄、multi は none 以外すべて）→ JSONの文と完全一致
+// 2. 全変数を選ぶ（文が空欄の選択肢は名前が出る）（single は先頭の非空欄、multi は none 以外すべて）→ JSONの文と完全一致
 const st = fresh();
 const expected = [];
 data.sections.forEach(s => {
@@ -17,7 +17,7 @@ data.sections.forEach(s => {
     let pick;
     if (v.type === 'multi') { pick = v.options.filter(o => !o.none); pick.forEach(o => M.setChoice(data, st, v.id, o.id, true)); }
     else { const o = v.options.find(o => o.text) || v.options[0]; M.setChoice(data, st, v.id, o.id, true); pick = [o]; }
-    pick.forEach(o => { if (!o.none) lines.push(o.text); });
+    pick.forEach(o => { if (!o.none) lines.push(o.text || o.name); });
   });
   if (lines.length) expected.push(s.name, ...lines);
 });
@@ -43,10 +43,11 @@ ok(a === 'none' && s4.sel[mv.id].join() === 'toes', '4 該当なしと他は同�
 // 5
 const s5 = fresh();
 data.variables.forEach(v => { if (v.type !== 'always') { const o = v.options.find(o => o.none) || v.options.find(o => o.text) || v.options[0]; M.setChoice(data, s5, v.id, o.id, true); } });
-const noneOnlyR = M.inspect(data, s5, {}, CT);
-ok(noneOnlyR.blockers.length === 2 && noneOnlyR.blockers.every(b => /入浴|仕事/.test(b)), '5 空欄の文は印刷不可（入浴・仕事のみ）');
-const ov = { 'bathing.ok': 'x', 'work.off': 'x' };
-ok(M.inspect(data, s5, ov, CT).blockers.length === 0, '5 none=true の選択肢は印刷可（文を入れれば全体も可）');
+ok(M.inspect(data, s5, {}, CT).blockers.length === 0, '5 文が空欄の選択肢（入浴・仕事）を選んでも印刷不可にならない');
+const t5 = M.sheetToText(M.buildSheet(data, s5, {}, CT));
+ok(t5.split('\n').includes('入浴可') && t5.split('\n').includes('業務不可（自宅安静）'), '5 文が空欄の選択肢は、名前が書面に出る');
+ok(M.sheetToText(M.buildSheet(data, s5, { 'bathing.ok': '入浴の文' }, CT)).split('\n').includes('入浴の文') && !M.sheetToText(M.buildSheet(data, s5, { 'bathing.ok': '入浴の文' }, CT)).split('\n').includes('入浴可'), '5 文が空欄でないときは、名前ではなく文が出る');
+ok(!t5.includes('該当なし') && !t5.includes('選ばない'), '5 none=true の選択肢は、何も出ない');
 // 6
 const s6 = fresh();
 ok(s6.sel.surgery.join() === 'text', '6 always は最初から選択');
@@ -60,7 +61,7 @@ ok(M.buildSheet(data, fresh(), { 'x': 'y' }, {}).notice.body === data.fixedNotic
 // 連絡先
 const full = fresh();
 data.variables.forEach(v => { if (v.type !== 'always') { const o = v.options.find(o => o.none) || v.options.find(o => o.text) || v.options[0]; M.setChoice(data, full, v.id, o.id, true); } });
-const fill = { 'bathing.ok': 'x', 'work.off': 'x' };
+const fill = {};
 const nb = c => M.inspect(data, full, fill, c).blockers.filter(b => b.includes('連絡先'));
 ok(nb({}).length === 1, '連絡先が空欄のとき印刷不可');
 ok(nb({ phone: '[医療機関の電話番号]', emergency: '[緊急時の連絡先]' }).length === 1, '仮の表記のままのとき印刷不可');

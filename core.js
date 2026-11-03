@@ -40,7 +40,8 @@
         const parts = [];
         v.options.forEach(o => {
           if (!state.sel[v.id].includes(o.id) || o.none) return;
-          parts.push(textOf(data, overrides, v, o));
+          const t = textOf(data, overrides, v, o);
+          parts.push(t.trim() === '' ? o.name : t);
         });
         const sp = (state.special[v.id] || '').trim();
         if (parts.length || sp) items.push({ varId: v.id, texts: parts, special: sp });
@@ -62,11 +63,6 @@
     data.variables.forEach(v => {
       const sel = state.sel[v.id];
       if (v.type !== 'always' && sel.length === 0) blockers.push('選び忘れ：' + v.name);
-      sel.forEach(id => {
-        const o = v.options.find(x => x.id === id);
-        if (!o.none && textOf(data, overrides, v, o).trim() === '')
-          blockers.push('文が空欄：' + v.name + '（' + o.name + '）');
-      });
     });
     if (!data.fixedNotice || !data.fixedNotice.body || !data.fixedNotice.body.trim())
       blockers.push('外せない注意書きがありません');
